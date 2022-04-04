@@ -1,10 +1,11 @@
 library(tidyverse)
 
-email = "nico.riedel@bih-charite.de"
-pdf_folder = "F:/Datenablage/sonstiges/Anfrage Tamarinde oddpub/pdfs/"
-pdf_txt_folder = "F:/Datenablage/sonstiges/Anfrage Tamarinde oddpub/pdf_to_txt/"
+#Admin set-up, add your email address and set up a folder structure. 
+email = "tamarinde.haven@bih-charite.de"
+pdf_folder = "~tamarinde1/projects/responsiblesupervision/pilot-responsible-supervision/pdfs/"
+pdf_txt_folder = "~tamarinde1/projects/responsiblesupervision/pilot-responsible-supervision/pdf_to_txt/"
 
-#download PDFs
+#download PDFs, read in the dataset; please check/revise the file name as needed. 
 dataset <- read_csv("pilot-result.csv")
 
 dois <- dataset$doi
@@ -14,7 +15,7 @@ pdfRetrieve::pdf_retrieve(dois, email,
                           save_folder = pdf_folder,
                           sleep = 10)
 
-#screen with oddpub
+#convert PDFs to text and screen with oddpub
 oddpub::pdf_convert(pdf_folder, pdf_txt_folder)
 pdf_txt <- oddpub::pdf_load(pdf_txt_folder)
 oddpub_results <- oddpub::open_data_search_parallel(pdf_txt)
