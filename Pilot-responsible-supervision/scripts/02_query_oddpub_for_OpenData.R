@@ -2,9 +2,9 @@ library(tidyverse)
 
 
 ## Admin details. 1) Set up email address, 2) make folder for pdfs, 3) make folder for pdf to text (see example below)
-email =  "tamarinde.haven@bih-charite.de"
-pdf_folder = "/users/Tamarinde1/Projects/ResponsibleSupervision/pdfs/"
-pdf_txt_folder = "/users/Tamarinde1/Projects/ResponsibleSupervision/pdf_to_txt/"
+email = '' # put your email address in here
+pdf_folder = '' # specify the folder where the PDFs will be stored
+pdf_txt_folder = '' # specify the folder where the text files (converted from the PDFs) will be stored
 
 ## Download PDFs. Note that you might need to install pdfRetrieve. Also check the file name of the csv you read in.
 dataset <- read_csv("pilot-result.csv")
@@ -38,3 +38,6 @@ dataset_oddpub <- dataset %>%
 
 
 dataset_oddpub %>% write_csv("pilot-result_oddpub.csv")
+
+## NOTE TO STUDENT ASSISTANTS
+## (please specify here how the data sanity checks will be done)
