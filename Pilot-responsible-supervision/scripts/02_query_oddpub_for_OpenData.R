@@ -1,11 +1,12 @@
 library(tidyverse)
 
-#Admin set-up, add your email address and set up a folder structure. 
-email = "tamarinde.haven@bih-charite.de"
-pdf_folder = "~tamarinde1/projects/responsiblesupervision/pilot-responsible-supervision/pdfs/"
-pdf_txt_folder = "~tamarinde1/projects/responsiblesupervision/pilot-responsible-supervision/pdf_to_txt/"
 
-#download PDFs, read in the dataset; please check/revise the file name as needed. 
+## Admin details. 1) Set up email address, 2) make folder for pdfs, 3) make folder for pdf to text (see example below)
+email =  "tamarinde.haven@bih-charite.de"
+pdf_folder = "/users/Tamarinde1/Projects/ResponsibleSupervision/pdfs/"
+pdf_txt_folder = "/users/Tamarinde1/Projects/ResponsibleSupervision/pdf_to_txt/"
+
+## Download PDFs. Note that you might need to install pdfRetrieve. Also check the file name of the csv you read in.
 dataset <- read_csv("pilot-result.csv")
 
 dois <- dataset$doi
@@ -15,7 +16,7 @@ pdfRetrieve::pdf_retrieve(dois, email,
                           save_folder = pdf_folder,
                           sleep = 10)
 
-#convert PDFs to text and screen with oddpub
+## Converting the PDFs to text and screening the text with oddpub for Open Data statements
 oddpub::pdf_convert(pdf_folder, pdf_txt_folder)
 pdf_txt <- oddpub::pdf_load(pdf_txt_folder)
 oddpub_results <- oddpub::open_data_search_parallel(pdf_txt)
