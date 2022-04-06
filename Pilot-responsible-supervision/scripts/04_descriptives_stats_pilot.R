@@ -39,60 +39,38 @@ dat %>%
 
 
 ## descriptive stats - trial registration
-dat <- dat %>%
-  mutate(
-    is_registration = if_else(
-      is_TRN == TRUE | type_of_open_methods_trial_registration_number == '1',
-      TRUE,
-      FALSE,
-      missing = FALSE
-    )
-  )
-summary(dat$is_registration)
 dat %>%
-  filter(owner == 'supervisor' & is_registration == TRUE) %>%
+  filter(owner == 'supervisor' & type_of_open_methods_trial_registration_number == '1') %>%
   nrow()
 dat %>%
-  filter(owner == 'candidate' & is_registration == TRUE) %>%
+  filter(owner == 'candidate' & type_of_open_methods_trial_registration_number == '1') %>%
   nrow()
 
 ## descriptive stats - preregistration
-summary(as.logical(dat$type_of_open_methods_preregistration))
 dat %>%
-  filter(owner == 'supervisor' & as.logical(type_of_open_methods_preregistration) == TRUE) %>%
+  filter(owner == 'supervisor' & type_of_open_methods_preregistration == '1') %>%
   nrow()
 dat %>%
-  filter(owner == 'candidate' & as.logical(type_of_open_methods_preregistration) == TRUE) %>%
+  filter(owner == 'candidate' & type_of_open_methods_preregistration == '1') %>%
   nrow()
 
 ## descriptive stats - protocol
-summary(as.logical(dat$type_of_open_methods_protocol))
 dat %>%
-  filter(owner == 'supervisor' & as.logical(type_of_open_methods_protocol) == TRUE) %>%
+  filter(owner == 'supervisor' & type_of_open_methods_protocol == '1') %>%
   nrow()
 dat %>%
-  filter(owner == 'candidate' & as.logical(type_of_open_methods_protocol) == TRUE) %>%
+  filter(owner == 'candidate' & type_of_open_methods_protocol == '1') %>%
   nrow()
 
 ## descriptive stats - open notebook
-summary(as.logical(dat$type_of_open_methods_open_notebook))
 dat %>%
-  filter(owner == 'supervisor' & as.logical(type_of_open_methods_open_notebook) == TRUE) %>%
+  filter(owner == 'supervisor' & type_of_open_methods_open_notebook == '1') %>%
   nrow()
 dat %>%
-  filter(owner == 'candidate' & as.logical(type_of_open_methods_open_notebook) == TRUE) %>%
+  filter(owner == 'candidate' & type_of_open_methods_open_notebook == '1') %>%
   nrow()
 
 ## descriptive stats - open code
-dat <- dat %>%
-  mutate(
-    is_open_code_3 = if_else(
-      is_open_code_2 == TRUE | type_of_open_methods_open_code == '1',
-      TRUE,
-      FALSE,
-      missing = FALSE
-    )
-  )
 summary(dat$is_open_code_3)
 dat %>%
   filter(owner == 'supervisor' & is_open_code_3 == TRUE) %>%
