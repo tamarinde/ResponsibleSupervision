@@ -39,5 +39,5 @@ dataset_oddpub <- dataset %>%
 
 dataset_oddpub %>% write_csv("pilot-result_oddpub.csv")
 
-## NOTE TO STUDENT ASSISTANTS
-## (please specify here how the data sanity checks will be done)
+## The next step would be to inspect the extracted open data statements using the open_methods_extraction_form.md.
+## This form can be downloaded from the repository. Please import the obtained dataset into Numbat have two raters independently scrutinise the statements using this extraction form. 
