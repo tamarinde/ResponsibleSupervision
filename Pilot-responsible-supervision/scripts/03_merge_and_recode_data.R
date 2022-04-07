@@ -17,12 +17,12 @@ dat_OM <- read_tsv('https://numbat.bgcarlisle.com/open-methods/export/2022-03-21
   filter(
     !c(
       referenceid == 64 |
-        referenceid == 68 |
-        referenceid == 70 |
-        referenceid == 73 |
-        referenceid == 74 |
-        referenceid == 77 |
-        referenceid == 78
+      referenceid == 68 |
+      referenceid == 70 |
+      referenceid == 73 |
+      referenceid == 74 |
+      referenceid == 77 |
+      referenceid == 78
     )
   ) %>%
   # select just the relevant variables from that dataset
@@ -50,7 +50,7 @@ dat <- left_join(dat_source, dat_OM, by = 'doi')
 ## ---- RECODE VARIABLES ----
 
 ## Open Access: create a binary vector that indicates whether a publication is Open Access or not
-dat_source <- dat_source %>%
+dat <- dat %>%
   mutate(
     is_open_access = case_when(
       oa_status == 'gold' | oa_status == 'green' | oa_status == 'hybrid' | oa_status == 'open' ~ TRUE,
@@ -62,7 +62,7 @@ dat_source <- dat_source %>%
 ## Open Data: create a binary vector that indicates whether a publication has open data or not
 ## (some items are NA, which indicates that ODDPub did not find an open data statement - thus,
 ## we count them as having no open data)
-dat_source <- dat_source %>%
+dat <- dat %>%
   mutate(
     is_open_data_2 = case_when( # I do not like the variable name, but 'is_open_data' already exists
       assessment == 'open_data' ~ TRUE,
@@ -74,19 +74,17 @@ dat_source <- dat_source %>%
 ## (some items are NA, which indicates that ODDPub did not find an open code statement - thus,
 ## we count them as having no open data - also, I am using the 'manual_check_code_th' variable,
 ## as my assessments, as stored in the 'manual_check_code_mh' variable, were exactly the same)
-dat_source <- dat_source %>%
+dat <- dat %>%
   mutate(
     is_open_code_2 = case_when( # I do not like the variable name, but 'is_open_code' already exists
       manual_check_code_th == 'yes' ~ TRUE,
       manual_check_code_th == 'code_reuse' | manual_check_code_th == 'no' | is.na(manual_check_code_th) ~ FALSE
     )
   )
-
-## Trial Registration Numbers: create a binary vector that indicates whether a publication has a TRN or not
-dat_source <- dat_source %>%
+dat <- dat %>%
   mutate(
-    is_TRN = if_else(
-      has_trn_secondary_id == TRUE | has_trn_abstract == TRUE | has_trn_ft == TRUE,
+    is_open_code_3 = if_else( # I do not like the variable name, but 'is_open_code' already exists
+      is_open_code_2 == TRUE | type_of_open_methods_open_code == '1',
       TRUE,
       FALSE,
       missing = FALSE
@@ -101,8 +99,7 @@ dat <- dat %>%
       TRUE,
       FALSE
     )
-  ) %>%
-  relocate(is_open_methods, .before = open_methods_yn)
+  )
 
 
 ## ---- SAVE FILE ----
