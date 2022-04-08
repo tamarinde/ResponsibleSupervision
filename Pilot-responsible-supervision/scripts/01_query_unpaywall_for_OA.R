@@ -1,10 +1,11 @@
-# Convert PMIDs to DOIs and query Unpaywall
+# Script to obtain the OA status of a set of DOIs (adapted from Delwen Franzen)
+# Queries Unpaywall via its API with UnpaywallR (Nico Riedel, https://github.com/NicoRiedel/unpaywallR)
 
 library(readr)
 library(dplyr)
 library(readxl)
 library(ConfigParser)
-source(here::here("scripts", "convert_id_single_type.R"))
+library(here)
 # renv::install("NicoRiedel/unpaywallR")
 library(unpaywallR)
 
@@ -13,38 +14,21 @@ cfg <- ConfigParser$new()
 cfg$read("config.ini")
 email_api <- cfg$get("email", NA, "login")
 
-# Convert PMIDs to DOIs ---------------------------------------------------
-
 data <- read_excel(
-  "data/pilot-dataset.xlsx"
+  here("data", "pilot-dataset.xlsx")
   )
 
-# Convert PMIDs to character vector
-data$pmid <- as.character(data$pmid)
-
-dois_from_pmids <-
-  data %>%
-  select(pmid) %>%
-  rowwise() %>%
-  mutate(
-    doi =
-      convert_id_single_type(pmid, from = "pmid", to = "doi", quiet = FALSE)
+# Get vector of unique DOIs
+dois <- data %>%
+  filter(
+    !is.na(doi)
   ) %>%
-  ungroup() %>%
-  filter(!is.na(doi)) %>%
-  distinct()
-
-
-# Query Unpaywall ------------------------------------------------
-# Using UnpaywallR (https://github.com/NicoRiedel/unpaywallR)
-
-# Extract DOIs to query
-pilot_dois <- dois_from_pmids %>%
+  distinct(doi) %>%
   pull(doi)
 
-print(paste("Number of DOIs:", length(pilot_dois)))
+print(paste("Number of DOIs:", length(dois)))
 
-# Define hierarchy of interest in case of multiple OA statuses
+# Define OA hierarchy of interest in case of multiple OA statuses
 hierarchy <-
   c("gold",
     "hybrid",
@@ -53,18 +37,18 @@ hierarchy <-
     "closed")
 
 # Query Unpaywall with input DOIs
-oa_data <-
+unpaywall_results <-
   unpaywallR::dois_OA_colors(
-    pilot_dois,
+    dois,
     email_api,
     clusters = 2,
     color_hierarchy = hierarchy
   ) %>%
   rename(oa_status = OA_color, publication_date_unpaywall = date)
 
-temp <- full_join(dois_from_pmids, oa_data, by = "doi")
-
+# Join initial data and Unpaywall results
 result <-
-  left_join(data, temp, by = "pmid") %>%
+  left_join(data, unpaywall_results, by = "doi") %>%
   mutate(across(everything(), ~na_if(., "")))
-write_csv(result, "data/pilot-result.csv")
+
+write_csv(result, here("data", "pilot-result.csv"))
