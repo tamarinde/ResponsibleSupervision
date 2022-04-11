@@ -1,8 +1,8 @@
 library(tidyverse)
 
 
-## You should now have two files based on the manual extraction forms, see
-## Pilot-responsible-supervision folder.
+## You should now have two files based on the manual extraction forms and the
+## manual check of the open code statements, see Pilot-responsible-supervision.
 ## The resulting files have been saved in the following places:
 ## data/pilot-result_oddpub_open_data.tsv
 ## data/pilot-result_oddpub_open_methods.tsv
