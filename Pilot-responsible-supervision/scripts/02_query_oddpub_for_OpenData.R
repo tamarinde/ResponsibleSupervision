@@ -42,8 +42,12 @@ dataset_oddpub <- dataset %>%
 
 dataset_oddpub %>% write_csv("pilot-result_oddpub.csv")
 
-## The next step would be to inspect the extracted open data statements using
-## the open_methods_extraction_form.md. See the Pilot-responsible-supervision
-## folder.
-## Please import the obtained dataset into Numbat have two raters independently
-## scrutinise the statements using this extraction form.
+
+## The next step would be to import the dataset into Numbat and inspect the
+## open data statements using the openness_data_check_(en)_2021.md. See the
+## Pilot-responsible-supervision folder.
+## In parallel, import the same dataset into Numbat and inspect all the publications
+## for open methods statements using the open_methods_extraction_form.md. See
+## the Pilot-responsible-supervision folder.
+## Please have two raters independently scrutinise the statements using this
+## extraction form.

@@ -1,17 +1,25 @@
 library(tidyverse)
 
 
+## You should now have two files based on the manual extraction forms, see
+## Pilot-responsible-supervision folder.
+## The resulting files have been saved in the following places:
+## data/pilot-result_oddpub_open_data.tsv
+## data/pilot-result_oddpub_open_methods.tsv
+
+
 ## ---- COMBINE DATASETS ----
 
 ## read in data
 
-## this is the last file sent by Tamarinde (2022-02-23), with manual changes in the 'manual_check_code_mh'
-## variable (which is Martin's manual Open Code checks)
+## this is the last file sent by Tamarinde (2022-02-23), with manual changes in
+## the 'manual_check_code_mh' variable (which is Martin's manual Open Code
+## checks)
 dat_source <- read_delim('data/merged_data-Ungefair-maia_MH.csv', delim = ';')
 
 ## this is the latest file for the Open Methods ratings, which are now completed 
-## (downloaded 2022-03-21)
-dat_OM <- read_tsv('https://numbat.bgcarlisle.com/open-methods/export/2022-03-21_032013-form_1-refset_1-final.tsv') %>%
+## (downloaded 2022-04-11)
+dat_OM <- read_tsv('data/pilot-result_oddpub_open_methods.tsv') %>%
   # delete the lines that refer to Laurent Thomas, as there seems to be an error in the dataset
   # said errors are also the reason why we have to filter for id, not name
   filter(
