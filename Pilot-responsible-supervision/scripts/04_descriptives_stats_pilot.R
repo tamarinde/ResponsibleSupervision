@@ -1,6 +1,12 @@
 library(tidyverse)
 
+
+## ---- READ DATA ----
+
 dat <- read_csv('data/pilot_data_processed.csv')
+
+
+## ---- DO DESCRIPTIVE STATS ----
 
 ## count the number of publications for supervisors and candidates (denominator)
 n_pubs_supervisors <- dat %>%
@@ -79,6 +85,8 @@ dat %>%
   filter(owner == 'candidate' & is_open_code_3 == TRUE) %>%
   nrow()
 
+
+## ---- CALCULATE CORRELATION COEFFICIENTS ----
 
 ## prepare correlations
 dat_candidate <- dat %>%
