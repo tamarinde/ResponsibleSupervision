@@ -1,12 +1,14 @@
 library(tidyverse)
 
 
-## Admin details. 1) Set up email address, 2) make folder for pdfs, 3) make folder for pdf to text (see example below)
+## Admin details. 1) Set up email address, 2) make folder for pdfs, 3) make
+## folder for pdf to text (see example below)
 email = '' # put your email address in here
 pdf_folder = '' # specify the folder where the PDFs will be stored
 pdf_txt_folder = '' # specify the folder where the text files (converted from the PDFs) will be stored
 
-## Download PDFs. Note that you might need to install pdfRetrieve. Also check the file name of the csv you read in.
+## Download PDFs. Note that you might need to install pdfRetrieve. Also check
+## the file name of the csv you read in.
 dataset <- read_csv("pilot-result.csv")
 
 dois <- dataset$doi
@@ -16,7 +18,8 @@ pdfRetrieve::pdf_retrieve(dois, email,
                           save_folder = pdf_folder,
                           sleep = 10)
 
-## Converting the PDFs to text and screening the text with oddpub for Open Data statements
+## Converting the PDFs to text and screening the text with oddpub for Open Data
+## statements
 oddpub::pdf_convert(pdf_folder, pdf_txt_folder)
 pdf_txt <- oddpub::pdf_load(pdf_txt_folder)
 oddpub_results <- oddpub::open_data_search_parallel(pdf_txt)
@@ -39,5 +42,8 @@ dataset_oddpub <- dataset %>%
 
 dataset_oddpub %>% write_csv("pilot-result_oddpub.csv")
 
-## The next step would be to inspect the extracted open data statements using the open_methods_extraction_form.md.
-## This form can be downloaded from the repository. Please import the obtained dataset into Numbat have two raters independently scrutinise the statements using this extraction form. 
+## The next step would be to inspect the extracted open data statements using
+## the open_methods_extraction_form.md. See the Pilot-responsible-supervision
+## folder.
+## Please import the obtained dataset into Numbat have two raters independently
+## scrutinise the statements using this extraction form.
