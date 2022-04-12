@@ -6,10 +6,11 @@ library(dplyr)
 library(readxl)
 library(ConfigParser)
 library(here)
-# renv::install("NicoRiedel/unpaywallR")
+library(devtools)
+install_github("NicoRiedel/unpaywallR")
 library(unpaywallR)
 
-# Set email for Unpaywall query
+# Set email for Unpaywall query (see README.md)
 cfg <- ConfigParser$new()
 cfg$read("config.ini")
 email_api <- cfg$get("email", NA, "login")
@@ -18,7 +19,7 @@ data <- read_excel(
   here("data", "pilot-dataset.xlsx")
   )
 
-# Get vector of unique DOIs
+# Get vector of unique DOIs (TO DO: add assert statement)
 dois <- data %>%
   filter(
     !is.na(doi)
@@ -26,7 +27,7 @@ dois <- data %>%
   distinct(doi) %>%
   pull(doi)
 
-print(paste("Number of DOIs:", length(dois)))
+print(paste("Number of unique DOIs:", length(dois)))
 
 # Define OA hierarchy of interest in case of multiple OA statuses
 hierarchy <-
