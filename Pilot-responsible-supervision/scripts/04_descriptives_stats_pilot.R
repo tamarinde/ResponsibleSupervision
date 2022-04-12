@@ -108,8 +108,9 @@ dat_supervisor <- dat %>%
   mutate(n_pubs_open_methods_supervisor = sum(is_open_methods))
 
 dat <- bind_rows(dat_candidate, dat_supervisor)
+rm(dat_candidate, dat_supervisor)
 
-dat <- dat %>%
+dat_aggregated <- dat %>%
   ungroup() %>%
   group_by(pair) %>%
   fill(
@@ -133,23 +134,97 @@ dat <- dat %>%
     open_methods_supervisor = n_pubs_open_methods_supervisor/n_pubs_supervisor
   )
 
+## create a new dataframe with just the relevant variables for correlations
+## (this is an aggregated dataset with just one line per pair)
+dat_cor <- dat_aggregated %>%
+  select(
+    c(
+      pair,
+      phd_candidate,
+      supervisor,
+      n_pubs_candidate,
+      n_pubs_open_access_candidate,
+      n_pubs_open_data_candidate,
+      n_pubs_open_methods_candidate,
+      n_pubs_supervisor,
+      n_pubs_open_access_supervisor,
+      n_pubs_open_data_supervisor,
+      n_pubs_open_methods_supervisor,
+      open_access_candidate,
+      open_access_supervisor,
+      open_data_candidate,
+      open_data_supervisor,
+      open_methods_candidate,
+      open_methods_supervisor
+    )
+  ) %>%
+  rename(
+    frac_open_access_candidate = open_access_candidate,
+    frac_open_access_supervisor = open_access_supervisor,
+    frac_open_data_candidate = open_data_candidate,
+    frac_open_data_supervisor = open_data_supervisor,
+    frac_open_methods_candidate = open_methods_candidate,
+    frac_open_methods_supervisor = open_methods_supervisor
+  )
+
 ## (Pearson) correlaton - Open Access
-cor(dat$open_access_candidate, dat$open_access_supervisor, method = 'pearson')
+cor_OA_Pearson <- cor(
+  dat_cor$frac_open_access_candidate,
+  dat_cor$frac_open_access_supervisor,
+  method = 'pearson'
+)
+cor_OA_Pearson
 ## (Spearman) correlaton - Open Access
-cor(dat$open_access_candidate, dat$open_access_supervisor, method = 'spearman')
+cor_OA_Spearman <- cor(
+  dat_cor$frac_open_access_candidate,
+  dat_cor$frac_open_access_supervisor,
+  method = 'spearman'
+)
+cor_OA_Spearman
 ## visual inspect
-plot(dat$open_access_candidate, dat$open_access_supervisor)
+plot(dat_cor$frac_open_access_candidate, dat_cor$frac_open_access_supervisor)
 
 ## (Pearson) correlaton - open data
-cor(dat$open_data_candidate, dat$open_data_supervisor, method = 'pearson')
+cor_OD_Pearson <- cor(
+  dat_cor$frac_open_data_candidate,
+  dat_cor$frac_open_data_supervisor,
+  method = 'pearson'
+)
+cor_OD_Pearson
 ## (Spearman) correlaton - open data
-cor(dat$open_data_candidate, dat$open_data_supervisor, method = 'spearman')
+cor_OD_Spearman <- cor(
+  dat_cor$frac_open_data_candidate,
+  dat_cor$frac_open_data_supervisor,
+  method = 'spearman'
+)
+cor_OD_Spearman
 ## visual inspect
-plot(dat$open_data_candidate, dat$open_data_supervisor)
+plot(dat_cor$frac_open_data_candidate, dat_cor$frac_open_data_supervisor)
 
 ## (Pearson) correlaton - open methods
-cor(dat$open_methods_candidate, dat$open_methods_supervisor, method = 'pearson', use = 'pairwise.complete.obs')
+cor_OM_Pearson <- cor(
+  dat_cor$frac_open_methods_candidate,
+  dat_cor$frac_open_methods_supervisor,
+  method = 'pearson',
+  use = 'pairwise.complete.obs' # account for missings in open methods ratings
+)
+cor_OM_Pearson
 ## (Spearman) correlaton - open methods
-cor(dat$open_methods_candidate, dat$open_methods_supervisor, method = 'spearman', use = 'pairwise.complete.obs')
+cor_OM_Spearman <- cor(
+  dat_cor$frac_open_methods_candidate,
+  dat_cor$frac_open_methods_supervisor,
+  method = 'spearman',
+  use = 'pairwise.complete.obs' # account for missings in open methods ratings
+)
+cor_OM_Spearman
 ## visual inspect
-plot(dat$open_methods_candidate, dat$open_methods_supervisor)
+plot(dat_cor$frac_open_methods_candidate, dat_cor$frac_open_methods_supervisor)
+
+## plot the correlations in one dataframe
+table_correlations <- tribble(
+  ~rating, ~spearman_correlation, ~pearson_correlation,
+  'Open Access', cor_OA_Spearman, cor_OA_Pearson,
+  'Open Data', cor_OD_Spearman, cor_OD_Pearson,
+  'Open Methods', cor_OM_Spearman, cor_OM_Pearson
+)
+View(table_correlations)
