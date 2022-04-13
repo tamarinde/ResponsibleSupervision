@@ -1,4 +1,5 @@
 library(tidyverse)
+library(here)
 
 
 ## You should now have two files based on the manual extraction forms and the
@@ -115,4 +116,4 @@ dat <- dat %>%
 
 ## save the file
 dat %>%
-  write_csv('data/pilot_data_processed.csv')
+  write_csv(here("data", "pilot_data_processed.csv"))

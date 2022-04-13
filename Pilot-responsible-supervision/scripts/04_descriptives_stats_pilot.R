@@ -3,7 +3,7 @@ library(tidyverse)
 
 ## ---- READ DATA ----
 
-dat <- read_csv('data/pilot_data_processed.csv')
+dat <- read_csv(here('data', 'pilot_data_processed.csv'))
 
 
 ## ---- DO DESCRIPTIVE STATS ----
@@ -228,3 +228,12 @@ table_correlations <- tribble(
   'Open Methods', cor_OM_Spearman, cor_OM_Pearson
 )
 View(table_correlations)
+
+
+## --- SAVE FILES ----
+
+dat_cor %>%
+  write_csv(here('data', 'pilot_data_correlations.csv'))
+
+table_correlations %>%
+  write_csv(here('data', 'pilot_table_correlations.csv'))
