@@ -4,7 +4,7 @@
 library(tidyverse)
 library(readxl)
 
-spreadsheet_folder <- "2022-06-15-spreadsheets/"
+spreadsheet_folder <- "Pilot-responsible-supervision/data/spreadsheets/"
 
 files <- list.files(
     spreadsheet_folder,
@@ -41,4 +41,4 @@ for (spreadsheet in files) {
 }
 
 combined %>%
-    write_csv("2022-05-15-output.csv")
+    write_csv(paste0("Pilot-responsible-supervision/data/", "output.csv"))
