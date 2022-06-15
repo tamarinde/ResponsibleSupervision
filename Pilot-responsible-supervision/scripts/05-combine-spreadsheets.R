@@ -1,0 +1,41 @@
+library(tidyverse)
+library(readxl)
+
+spreadsheet_folder <- "2022-06-15-spreadsheets/"
+
+files <- list.files(
+    spreadsheet_folder,
+    "\\.xlsx$"
+)
+
+combined <- tibble()
+
+for (spreadsheet in files) {
+    newrows <- read_xlsx(
+        paste0(
+            spreadsheet_folder,
+            spreadsheet
+        )
+    ) %>%
+        select(
+            pair,
+            phd_candidate,
+            supervisor,
+            country,
+            institute,
+            subfield,
+            doi,
+            owner,
+            position_author_supervisor,
+            concern_methods_tools_devlpmnt_or_review,
+            thesis_year,
+            thesis_title,
+            thesis_link
+        )
+
+    combined <- combined %>%
+        bind_rows(newrows)
+}
+
+combined %>%
+    write_csv("2022-05-15-output.csv")
