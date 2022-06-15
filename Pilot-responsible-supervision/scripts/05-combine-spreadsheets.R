@@ -1,3 +1,6 @@
+## This script will take all the .xlsx files in a folder specified in
+## `spreadsheet_folder` and combine them all into a single CSV file.
+
 library(tidyverse)
 library(readxl)
 
