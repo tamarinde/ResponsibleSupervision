@@ -1,4 +1,4 @@
-# ResponsibleSupervision
+# ResponsibleSupervision!!!
 
 This is the repository for the Responsible Supervision pilot project. We analysed a set of publications from PhD candidates and their respective primary supervisors (in pairs). We did so by screening the publications for particular Open Science/Responsible Research Practices. Here we describe how and which automated screening tools we used.
 
