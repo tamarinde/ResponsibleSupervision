@@ -12,11 +12,13 @@ library(unpaywallR)
 
 # Set email for Unpaywall query (see README.md)
 cfg <- ConfigParser$new()
-cfg$read("config.ini")
+cfg$read("Pilot-responsible-supervision/config.ini")
 email_api <- cfg$get("email", NA, "login")
 
-data <- read_excel(
-  here("data", "pilot-dataset.xlsx")
+##please double the appropriate working directory
+
+data <- read_csv(
+  "data/output.csv"
   )
 
 # Get vector of unique DOIs (TO DO: add assert statement)
@@ -52,4 +54,14 @@ result <-
   left_join(data, unpaywall_results, by = "doi") %>%
   mutate(across(everything(), ~na_if(., "")))
 
-write_csv(result, here("data", "pilot-result.csv"))
+# Joining data without the 22 duplicated doi with unpaywall results
+data$dup <- duplicated(data$doi)
+data %>% filter(! dup)
+data2 <- data %>% filter(! dup) %>% select(! dup)
+
+final_result <-
+  left_join(data2, unpaywall_results, by = "doi") %>%
+  mutate(across(everything(), ~na_if(., "")))
+
+
+write_csv(final_result, "data/01-script-output.csv")
