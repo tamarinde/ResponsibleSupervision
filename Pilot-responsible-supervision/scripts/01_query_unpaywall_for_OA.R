@@ -21,7 +21,11 @@ data <- read_csv(
   "data/output.csv"
   )
 
-# Get vector of unique DOIs (TO DO: add assert statement)
+# Add flag of duplicate DOIs
+data$dup <- duplicated(data$doi)
+
+# Get vector of unique DOIs (TO DO: add assert statement to stop the code from
+# running in case you have an unexpected number of DOIs)
 dois <- data %>%
   filter(
     !is.na(doi)
@@ -49,19 +53,11 @@ unpaywall_results <-
   ) %>%
   rename(oa_status = OA_color, publication_date_unpaywall = date)
 
-# Join initial data and Unpaywall results
+# Join initial data and Unpaywall results (the resulting dataframe will have
+# the same number of rows as the input dataframe and will include duplicate
+# DOIs (if any))
 result <-
   left_join(data, unpaywall_results, by = "doi") %>%
   mutate(across(everything(), ~na_if(., "")))
 
-# Joining data without the 22 duplicated doi with unpaywall results
-data$dup <- duplicated(data$doi)
-data %>% filter(! dup)
-data2 <- data %>% filter(! dup) %>% select(! dup)
-
-final_result <-
-  left_join(data2, unpaywall_results, by = "doi") %>%
-  mutate(across(everything(), ~na_if(., "")))
-
-
-write_csv(final_result, "data/01-script-output.csv")
+write_csv(result, "data/01-script-output.csv")
