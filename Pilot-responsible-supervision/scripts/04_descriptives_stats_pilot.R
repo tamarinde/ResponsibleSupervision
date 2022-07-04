@@ -3,8 +3,8 @@ library(tidyverse)
 
 ## ---- READ DATA ----
 
-dat <- read_csv(here('data', 'pilot_data_processed.csv'))
-
+#dat <- read_csv(here('data', 'pilot_data_processed.csv'))
+dat <- read_csv("Pilot-responsible-supervision/data/open_access_added.csv")
 
 ## ---- DO DESCRIPTIVE STATS ----
 
@@ -26,12 +26,12 @@ dat %>%
   nrow()
 
 ## descriptive stats - open data
-summary(dat$is_open_data_2)
+summary(dat$is_open_data)
 dat %>%
-  filter(owner == 'supervisor' & is_open_data_2 == TRUE) %>%
+  filter(owner == 'supervisor' & is_open_data == TRUE) %>%
   nrow()
 dat %>%
-  filter(owner == 'candidate' & is_open_data_2 == TRUE) %>%
+  filter(owner == 'candidate' & is_open_data == TRUE) %>%
   nrow()
 
 ## descriptive stats - open methods
@@ -95,8 +95,7 @@ dat_candidate <- dat %>%
   group_by(pair) %>%
   mutate(n_pubs_candidate = n()) %>%
   mutate(n_pubs_open_access_candidate = sum(is_open_access)) %>%
-  mutate(n_pubs_open_data_candidate = sum(is_open_data_2)) %>%
-  mutate(n_pubs_open_methods_candidate = sum(is_open_methods))
+  mutate(n_pubs_open_data_candidate = sum(is_open_data))
 
 dat_supervisor <- dat %>%
   ungroup() %>%
@@ -104,8 +103,7 @@ dat_supervisor <- dat %>%
   group_by(pair) %>%
   mutate(n_pubs_supervisor = n()) %>%
   mutate(n_pubs_open_access_supervisor = sum(is_open_access)) %>%
-  mutate(n_pubs_open_data_supervisor = sum(is_open_data_2)) %>%
-  mutate(n_pubs_open_methods_supervisor = sum(is_open_methods))
+  mutate(n_pubs_open_data_supervisor = sum(is_open_data)) 
 
 dat <- bind_rows(dat_candidate, dat_supervisor)
 rm(dat_candidate, dat_supervisor)
@@ -117,11 +115,11 @@ dat_aggregated <- dat %>%
     n_pubs_candidate,
     n_pubs_open_access_candidate,
     n_pubs_open_data_candidate,
-    n_pubs_open_methods_candidate,
+  
     n_pubs_supervisor,
     n_pubs_open_access_supervisor,
     n_pubs_open_data_supervisor,
-    n_pubs_open_methods_supervisor,
+   
     .direction = 'downup'
   ) %>%
   slice_head() %>%
@@ -130,8 +128,8 @@ dat_aggregated <- dat %>%
     open_access_supervisor = n_pubs_open_access_supervisor/n_pubs_supervisor,
     open_data_candidate = n_pubs_open_data_candidate/n_pubs_candidate,
     open_data_supervisor = n_pubs_open_data_supervisor/n_pubs_supervisor,
-    open_methods_candidate = n_pubs_open_methods_candidate/n_pubs_candidate,
-    open_methods_supervisor = n_pubs_open_methods_supervisor/n_pubs_supervisor
+    
+    
   )
 
 ## create a new dataframe with just the relevant variables for correlations
@@ -145,17 +143,17 @@ dat_cor <- dat_aggregated %>%
       n_pubs_candidate,
       n_pubs_open_access_candidate,
       n_pubs_open_data_candidate,
-      n_pubs_open_methods_candidate,
+      
       n_pubs_supervisor,
       n_pubs_open_access_supervisor,
       n_pubs_open_data_supervisor,
-      n_pubs_open_methods_supervisor,
+      
       open_access_candidate,
       open_access_supervisor,
       open_data_candidate,
       open_data_supervisor,
-      open_methods_candidate,
-      open_methods_supervisor
+      
+      
     )
   ) %>%
   rename(
@@ -163,9 +161,13 @@ dat_cor <- dat_aggregated %>%
     frac_open_access_supervisor = open_access_supervisor,
     frac_open_data_candidate = open_data_candidate,
     frac_open_data_supervisor = open_data_supervisor,
-    frac_open_methods_candidate = open_methods_candidate,
-    frac_open_methods_supervisor = open_methods_supervisor
+    
+    
   )
+##New correlation code added by NH because other codes below did not work 
+cor.test(dat_cor$frac_open_access_candidate, dat_cor$frac_open_access_supervisor, method = c("spearman"))
+cor.test(dat_cor$frac_open_data_candidate, dat_cor$frac_open_data_supervisor, method = c("spearman"))
+
 
 ## (Pearson) correlaton - Open Access
 cor_OA_Pearson <- cor(
