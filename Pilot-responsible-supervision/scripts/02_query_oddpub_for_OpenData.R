@@ -4,19 +4,22 @@ library(tidyverse)
 ## Admin details. 1) Set up email address, 2) make folder for pdfs, 3) make
 ## folder for pdf to text (see example below)
 email = '' # put your email address in here
-pdf_folder = '' # specify the folder where the PDFs will be stored
-pdf_txt_folder = '' # specify the folder where the text files (converted from the PDFs) will be stored
+pdf_folder = 'pdfs/' # specify the folder where the PDFs will be stored
+pdf_txt_folder = 'pdf_to_text/' # specify the folder where the text files (converted from the PDFs) will be stored
 
 ## Download PDFs. Note that you might need to install pdfRetrieve. Also check
 ## the file name of the csv you read in.
-dataset <- read_csv("pilot-result.csv")
+dataset <- read_csv("01-script-cleaned-output.csv")
 
-dois <- dataset$doi
+ddois <- dataset$doi
 dois <- dois[dois != "" & !is.na(dois)] %>% unique()
 
 pdfRetrieve::pdf_retrieve(dois, email,
                           save_folder = pdf_folder,
                           sleep = 10)
+
+## Please check here whether all the DOIs now indeed have a matching PDF.
+## If not, try to obtain the PDFs through colleagues or other ways.
 
 ## Converting the PDFs to text and screening the text with oddpub for Open Data
 ## statements
@@ -40,7 +43,7 @@ dataset_oddpub <- dataset %>%
   mutate(downloaded = !is.na(is_open_data))
 
 
-dataset_oddpub %>% write_csv("pilot-result_oddpub.csv")
+dataset_oddpub %>% write_csv("results_oddpub.csv")
 
 
 ## The next step would be to import the dataset into Numbat and inspect the
