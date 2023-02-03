@@ -1,5 +1,6 @@
 library(tidyverse)
 
+# test dataset
 dataset <- tribble(
   ~pair, ~owner, ~oa_status, ~is_open_data,
   1, "supervisor", TRUE, TRUE,
@@ -14,17 +15,28 @@ dataset <- tribble(
   4, "supervisor", FALSE, FALSE
 )
 
-dataset %>%
-  filter(owner == "supervisor") %>%
+dataset <- dataset %>%
+  # account for when oa_status is NA otherwise this will return NA
+  filter(
+    owner == "supervisor",
+    !is.na(oa_status)
+    ) %>%
   group_by(pair) %>%
-  mutate(denominator = n()) %>%
-  mutate(sum(oa_status)) %>%
-  mutate(fraction = `sum(oa_status)`/denominator) %>%
-  rename(numerator = `sum(oa_status)`) %>%
-  slice_head() %>%
-  mutate(category = ifelse(fraction == 0, 0, ifelse(fraction > 0.5, 2, 1))) %>%
-  select(! oa_status) %>%
-  select(! owner)
+  mutate(
+    denom = n(),
+    num = sum(oa_status),
+    perc = round(num/denom, 2)
+  ) %>%
+  slice(1) %>%
+  ungroup() %>%
+  # decide how to handle exact matches to threshold
+  mutate(oa_category = case_when(
+    perc < 0.76 ~ 1,
+    perc >= 0.76 ~ 2
+    )) %>%
+  # what should the structure of the output dataframe be?
+  select(!oa_status) %>%
+  select(!owner)
 
 ## Below regards the most recent open data version, i.e., after using the protocol
 ## https://dx.doi.org/10.17504/protocols.io.q26g74p39gwz/v1 in the Numbat 
