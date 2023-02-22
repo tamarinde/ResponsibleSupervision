@@ -18,7 +18,7 @@ email_api <- cfg$get("email", NA, "login")
 ##please double the appropriate working directory
 
 data <- read_csv(
-  "data/output.csv"
+  "merged_with_numbat.csv"
   )
 
 # Add flag of duplicate DOIs

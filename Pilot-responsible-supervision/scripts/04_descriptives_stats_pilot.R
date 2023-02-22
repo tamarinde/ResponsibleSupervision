@@ -3,8 +3,8 @@ library(tidyverse)
 
 ## ---- READ DATA ----
 
-#dat <- read_csv(here('data', 'pilot_data_processed.csv'))
-dat <- read_csv("data/open_access_added.csv")
+#read in full dataset on publication level.
+dat <- read_csv("230215_automated_extractions_OA_OD_plus_manually_verified_anonymized.csv")
 
 
 ## ---- DO DESCRIPTIVE STATS ----
@@ -18,15 +18,15 @@ n_pubs_candidates <- dat %>%
   nrow()
 
 ## descriptive stats - Open Access
-summary(dat$is_open_access)
+summary(dat$oa_status)
 dat %>%
-  filter(owner == 'supervisor' & is_open_access == TRUE) %>%
+  filter(owner == 'supervisor' & oa_status == TRUE) %>%
   nrow()
 dat %>%
-  filter(owner == 'candidate' & is_open_access == TRUE) %>%
+  filter(owner == 'candidate' & oa_status == TRUE) %>%
   nrow()
 
-## descriptive stats - open data
+## descriptive stats - Open Data automated
 summary(dat$is_open_data)
 dat %>%
   filter(owner == 'supervisor' & is_open_data == TRUE) %>%
@@ -35,6 +35,14 @@ dat %>%
   filter(owner == 'candidate' & is_open_data == TRUE) %>%
   nrow()
 
+## descriptive stats - Open Data manually verified 
+summary(dat$is_open_data_manually_verified)
+dat %>%
+  filter(owner == 'supervisor' & is_open_data_manually_verified == TRUE) %>%
+  nrow()
+dat %>%
+  filter(owner == 'candidate' & is_open_data_manually_verified == TRUE) %>%
+  nrow()
 
 ## ---- CALCULATE CORRELATION COEFFICIENTS ----
 
@@ -44,16 +52,18 @@ dat_candidate <- dat %>%
   filter(owner == 'candidate') %>%
   group_by(pair) %>%
   mutate(n_pubs_candidate = n()) %>%
-  mutate(n_pubs_open_access_candidate = sum(is_open_access)) %>%
-  mutate(n_pubs_open_data_candidate = sum(is_open_data))
+  mutate(n_pubs_open_access_candidate = sum(oa_status)) %>%
+  mutate(n_pubs_open_data_candidate = sum(is_open_data)) %>%
+  mutate(n_pubs_open_data_manually_verified_candidate = sum(is_open_data_manually_verified))
 
 dat_supervisor <- dat %>%
   ungroup() %>%
   filter(owner == 'supervisor') %>%
   group_by(pair) %>%
   mutate(n_pubs_supervisor = n()) %>%
-  mutate(n_pubs_open_access_supervisor = sum(is_open_access)) %>%
-  mutate(n_pubs_open_data_supervisor = sum(is_open_data)) 
+  mutate(n_pubs_open_access_supervisor = sum(oa_status)) %>%
+  mutate(n_pubs_open_data_supervisor = sum(is_open_data)) %>%
+  mutate(n_pubs_open_data_manually_verified_supervisor = sum(is_open_data_manually_verified))
 
 dat <- bind_rows(dat_candidate, dat_supervisor)
 rm(dat_candidate, dat_supervisor)
@@ -65,9 +75,11 @@ dat_aggregated <- dat %>%
     n_pubs_candidate,
     n_pubs_open_access_candidate,
     n_pubs_open_data_candidate,
+    n_pubs_open_data_manually_verified_candidate,
     n_pubs_supervisor,
     n_pubs_open_access_supervisor,
     n_pubs_open_data_supervisor,
+    n_pubs_open_data_manually_verified_supervisor,
     .direction = 'downup'
   ) %>%
   slice_head() %>%
@@ -75,7 +87,9 @@ dat_aggregated <- dat %>%
     open_access_candidate = n_pubs_open_access_candidate/n_pubs_candidate,
     open_access_supervisor = n_pubs_open_access_supervisor/n_pubs_supervisor,
     open_data_candidate = n_pubs_open_data_candidate/n_pubs_candidate,
-    open_data_supervisor = n_pubs_open_data_supervisor/n_pubs_supervisor
+    open_data_supervisor = n_pubs_open_data_supervisor/n_pubs_supervisor,
+    open_data_MV_candidate = n_pubs_open_data_manually_verified_candidate,
+    open_data_MV_supervisor = n_pubs_open_data_manually_verified_supervisor
   )
 
 ## create a new dataframe with just the relevant variables for correlations
@@ -84,48 +98,40 @@ dat_cor <- dat_aggregated %>%
   select(
     c(
       pair,
-      phd_candidate,
-      supervisor,
       n_pubs_candidate,
       n_pubs_open_access_candidate,
       n_pubs_open_data_candidate,
+      n_pubs_open_data_manually_verified_candidate,
       n_pubs_supervisor,
       n_pubs_open_access_supervisor,
       n_pubs_open_data_supervisor,
+      n_pubs_open_data_manually_verified_supervisor,
       open_access_candidate,
       open_access_supervisor,
       open_data_candidate,
-      open_data_supervisor
+      open_data_supervisor,
+      open_data_MV_candidate,
+      open_data_MV_supervisor
     )
   ) %>%
   rename(
     frac_open_access_candidate = open_access_candidate,
     frac_open_access_supervisor = open_access_supervisor,
     frac_open_data_candidate = open_data_candidate,
-    frac_open_data_supervisor = open_data_supervisor
+    frac_open_data_supervisor = open_data_supervisor,
+    frac_open_data_MV_candidate = open_data_MV_candidate,
+    frac_open_data_MV_supervisor = open_data_MV_supervisor
   )
 
-##New correlation code added by NH because other codes below did not work 
-cor.test(
-  dat_cor$frac_open_access_candidate,
-  dat_cor$frac_open_access_supervisor,
-  method = "spearman"
-)
-cor.test(
-  dat_cor$frac_open_data_candidate,
-  dat_cor$frac_open_data_supervisor,
-  method = "spearman"
-)
-
-## (Pearson) correlaton - Open Access
+## (Pearson) correlation - Open Access
 cor_OA_Pearson <- cor(
   dat_cor$frac_open_access_candidate,
   dat_cor$frac_open_access_supervisor,
   method = 'pearson',
   use = 'pairwise.complete.obs' # account for missing data
 )
-cor_OA_Pearson
-## (Spearman) correlaton - Open Access
+#cor_OA_Pearson
+## (Spearman) correlation - Open Access
 cor_OA_Spearman <- cor(
   dat_cor$frac_open_access_candidate,
   dat_cor$frac_open_access_supervisor,
@@ -136,7 +142,7 @@ cor_OA_Spearman
 ## visual inspect
 plot(dat_cor$frac_open_access_candidate, dat_cor$frac_open_access_supervisor)
 
-## (Pearson) correlaton - open data
+## (Pearson) correlation - Open Data automated
 cor_OD_Pearson <- cor(
   dat_cor$frac_open_data_candidate,
   dat_cor$frac_open_data_supervisor,
@@ -144,7 +150,7 @@ cor_OD_Pearson <- cor(
   use = 'pairwise.complete.obs' # account for missing data
 )
 cor_OD_Pearson
-## (Spearman) correlaton - open data
+## (Spearman) correlation - Open Data automated
 cor_OD_Spearman <- cor(
   dat_cor$frac_open_data_candidate,
   dat_cor$frac_open_data_supervisor,
@@ -152,6 +158,24 @@ cor_OD_Spearman <- cor(
   use = 'pairwise.complete.obs' # account for missing data
 )
 cor_OD_Spearman
+
+## (Pearson) correlation - Open Data manually verified
+cor_ODMV_Pearson <- cor(
+  dat_cor$frac_open_data_MV_candidate,
+  dat_cor$frac_open_data_MV_supervisor,
+  method = 'pearson',
+  use = 'pairwise.complete.obs' # account for missing data
+)
+cor_ODMV_Pearson
+## (Spearman) correlation - Open Data manually verified
+cor_ODMV_Spearman <- cor(
+  dat_cor$frac_open_data_MV_candidate,
+  dat_cor$frac_open_data_MV_supervisor,
+  method = 'spearman',
+  use = 'pairwise.complete.obs' # account for missing data
+)
+cor_ODMV_Spearman
+
 ## visual inspect
 plot(dat_cor$frac_open_data_candidate, dat_cor$frac_open_data_supervisor)
 
@@ -159,7 +183,8 @@ plot(dat_cor$frac_open_data_candidate, dat_cor$frac_open_data_supervisor)
 table_correlations <- tribble(
   ~rating, ~spearman_correlation, ~pearson_correlation,
   'Open Access', cor_OA_Spearman, cor_OA_Pearson,
-  'Open Data', cor_OD_Spearman, cor_OD_Pearson
+  'Open Data automated', cor_OD_Spearman, cor_OD_Pearson,
+  'Open Data manually verified',cor_ODMV_Spearman, cor_ODMV_Pearson
 )
 View(table_correlations)
 
@@ -167,7 +192,7 @@ View(table_correlations)
 ## --- SAVE FILES ----
 
 dat_cor %>%
-  write_csv(here('data', 'pilot_data_correlations.csv'))
+  write_csv('correlation.csv')
 
 table_correlations %>%
-  write_csv(here('data', 'pilot_table_correlations.csv'))
+  write_csv('table_correlations.csv')
