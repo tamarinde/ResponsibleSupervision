@@ -1,0 +1,43 @@
+---
+title: "Codebook responsible supervision"
+author: "Tamarinde"
+date: "2023-02-21"
+output: html_document
+---
+
+
+OPEN ACCESS VARIABLES
+
+oa_status_unpaywall = the best version in which Unpaywall found the publication,
+we re-code this later into open/closed based on the version it was found in.
+Categorical/nominal variable on the publication level.
+
+oa_status = whether the publication was open (gold, green, hybrid) or closed
+(bronze, closed). Binary variable on the publication level. Note that the 
+final dataset only contains data on the candidate level, because the supervisors'
+behaviors have been recoded.
+
+category_oa = whether the percentage of publications we included for the supervisor
+in our study exceeded 76% (national average The Netherlands in 2021 using our
+categorisation). 0 means less or up to 76% was open, 1 means more than 76% was open.
+Binary variable on the level of the pair.
+
+OPEN DATA VARIABLES
+
+is_open_data = whether OddPub found an indication of data sharing. TRUE means 
+it did. Binary variable on the publication level.
+
+manually_verified_open = whether two extractors, based on a piloted protocol,
+agreed that the data was actually open. Binary variable on the publication level.
+
+open_data_ever = whether any of the publications we included for the supervisor
+seemed to share data was picked up by OddPub, 1 means OddPub found an indication
+in one or more of the publications from that supervisor we included. Binary variable
+on the level of the pair. 
+
+open_data_numbat_ever = whether any of the publications that OddPub flagged as
+potentially sharing data actually had open data. 1 means two extractors agreed 
+that one or more of the publications from that supervisor actually had open data.
+Binary variable on the level of the pair. 
+
+
